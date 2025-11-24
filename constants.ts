@@ -50,10 +50,10 @@ export const ITEM_DB: Record<number, ItemDefinition> = {
 
   // Crops & Seeds
   472: { name: '防风草种子', type: 'seed', price: 20, cropId: 24, description: '春季作物。4天成熟。', sprite: 'springobjects.png', pos: [496, 0] },
-  24: { name: '防风草', type: 'crop', sellPrice: 35, daysToGrow: 4, stages: 5, seasons: ['Spring'], sprite: 'crops.png', row: 0, color: '#e8cfb3', edible: true, energyRestore: 25 },
+  24: { name: '防风草', type: 'crop', sellPrice: 35, daysToGrow: 4, stages: 5, seasons: ['春季'], sprite: 'crops.png', row: 0, color: '#e8cfb3', edible: true, energyRestore: 25 },
 
   474: { name: '土豆种子', type: 'seed', price: 50, cropId: 192, description: '春季作物。6天成熟。', sprite: 'springobjects.png', pos: [496, 0] },
-  192: { name: '土豆', type: 'crop', sellPrice: 80, daysToGrow: 6, stages: 5, seasons: ['Spring'], chanceForExtra: 0.2, sprite: 'crops.png', row: 6, color: '#d7ccc8' },
+  192: { name: '土豆', type: 'crop', sellPrice: 80, daysToGrow: 6, stages: 5, seasons: ['春季'], chanceForExtra: 0.2, sprite: 'crops.png', row: 6, color: '#d7ccc8' },
 
   // Tools & Weapons
   101: { name: '锄头', type: 'tool', action: 'till', energy: 2, tier: 1, description: '用于耕地。' },
