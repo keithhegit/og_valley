@@ -890,7 +890,7 @@ const Game: React.FC = () => {
             <div className="absolute top-4 right-4 z-30 pointer-events-none text-right">
                 <h1 className="text-white font-bold text-shadow text-xl uppercase tracking-widest opacity-80">{currentScene}</h1>
                 <div className="text-white font-bold text-shadow mt-1 opacity-90">
-                    Day {gameState.day}, {SEASONS[gameState.seasonIdx]} | {Math.floor(gameState.time / 60)}:{(gameState.time % 60).toString().padStart(2, '0')}
+                    第 {gameState.day} 天, {SEASONS[gameState.seasonIdx]} | {Math.floor(gameState.time / 60)}:{(gameState.time % 60).toString().padStart(2, '0')}
                 </div>
                 <div className="text-white/50 text-[10px] font-mono mt-1">
                     {BRANCH}@{COMMIT}
@@ -899,9 +899,9 @@ const Game: React.FC = () => {
 
             {/* PLAYER STATS */}
             <div className="absolute top-16 right-4 z-30 bg-[#e6c697]/90 border-2 border-[#8b5e34] p-2 rounded">
-                <div className="text-[#5d4a2e] text-sm font-bold">HP: {player.hp}/{player.maxHp}</div>
-                <div className="text-[#5d4a2e] text-sm font-bold">Energy: {player.energy}/{player.maxEnergy}</div>
-                <div className="text-[#5d4a2e] text-sm font-bold">Gold: {player.money}g</div>
+                <div className="text-[#5d4a2e] text-sm font-bold">生命: {player.hp}/{player.maxHp}</div>
+                <div className="text-[#5d4a2e] text-sm font-bold">体力: {player.energy}/{player.maxEnergy}</div>
+                <div className="text-[#5d4a2e] text-sm font-bold">金钱: {player.money}g</div>
             </div>
 
             {/* TOOLTIP */}
