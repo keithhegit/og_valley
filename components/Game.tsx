@@ -104,6 +104,8 @@ const Game: React.FC = () => {
     const [message, setMessage] = useState<string | null>(null);
     const [dialogue, setDialogue] = useState<{ speaker: string, text: string } | null>(null);
     const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
+    const [tooltip, setTooltip] = useState<{ itemId: number, x: number, y: number } | null>(null);
+    const [longPressTimer, setLongPressTimer] = useState<number | null>(null);
 
     const playerRef = useRef(player);
     const gameStateRef = useRef(gameState);
@@ -144,8 +146,8 @@ const Game: React.FC = () => {
                     newTime = START_TIME; // Reset to 6:00 AM
                     newDay = prev.day + 1;
 
-                    // Reset player position to bed (Farm 3, 2)
-                    setPlayer(p => ({ ...p, x: 3, y: 2, energy: p.maxEnergy, hp: p.maxHp }));
+                    // Reset player position to spawn point (Farm 6, 4) - outside house
+                    setPlayer(p => ({ ...p, x: 6, y: 4, energy: p.maxEnergy, hp: p.maxHp }));
                     setCurrentScene('FARM');
 
                     // Auto-save on sleep
@@ -218,8 +220,8 @@ const Game: React.FC = () => {
                                 hp: p.maxHp,
                                 energy: p.maxEnergy,
                                 money: Math.max(0, p.money - moneyLost),
-                                x: 3,
-                                y: 2
+                                x: 6,
+                                y: 4
                             };
                         }
 
@@ -261,18 +263,33 @@ const Game: React.FC = () => {
         const newX = x + dx;
         const newY = y + dy;
 
-        if (newX < 0 || newX >= GRID_W || newY < 0 || newY >= GRID_H) return;
+        // Auto-face direction of movement (even if can't move)
+        let newFacing = playerRef.current.facing;
+        if (dx > 0) newFacing = 'RIGHT';
+        if (dx < 0) newFacing = 'LEFT';
+        if (dy > 0) newFacing = 'DOWN';
+        if (dy < 0) newFacing = 'UP';
+
+        if (newX < 0 || newX >= GRID_W || newY < 0 || newY >= GRID_H) {
+            // Update facing even if out of bounds
+            setPlayer(prev => ({ ...prev, facing: newFacing }));
+            return;
+        }
 
         const targetTile = grids[currentScene][newY][newX];
 
         // Warp
         if (targetTile.warp) {
             setCurrentScene(targetTile.warp.target);
-            setPlayer(p => ({ ...p, x: targetTile.warp!.x, y: targetTile.warp!.y }));
+            setPlayer(p => ({ ...p, x: targetTile.warp!.x, y: targetTile.warp!.y, facing: newFacing }));
             return;
         }
 
-        if (!targetTile.canWalk) return;
+        if (!targetTile.canWalk) {
+            // Update facing even if blocked
+            setPlayer(prev => ({ ...prev, facing: newFacing }));
+            return;
+        }
 
         // Collision
         if (targetTile.objectId !== null) {
@@ -281,13 +298,11 @@ const Game: React.FC = () => {
         }
 
         // NPC Collision
-        if (npcs.some(n => n.scene === currentScene && n.x === newX && n.y === newY)) return;
-
-        let newFacing = playerRef.current.facing;
-        if (dx > 0) newFacing = 'RIGHT';
-        if (dx < 0) newFacing = 'LEFT';
-        if (dy > 0) newFacing = 'DOWN';
-        if (dy < 0) newFacing = 'UP';
+        if (npcs.some(n => n.scene === currentScene && n.x === newX && n.y === newY)) {
+            // Update facing even if NPC blocks
+            setPlayer(prev => ({ ...prev, facing: newFacing }));
+            return;
+        }
 
         setPlayer(prev => ({ ...prev, x: newX, y: newY, facing: newFacing }));
     }, [grids, currentScene, uiMode, npcs]);
@@ -523,6 +538,27 @@ const Game: React.FC = () => {
         setPlayer(p => ({ ...p, cursorItem: null }));
     };
 
+    // --- TOOLTIP SYSTEM ---
+    const handleTooltipShow = (itemId: number, x: number, y: number) => {
+        setTooltip({ itemId, x, y });
+    };
+
+    const handleTooltipHide = () => {
+        setTooltip(null);
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            setLongPressTimer(null);
+        }
+    };
+
+    const handleLongPressStart = (itemId: number, e: React.TouchEvent) => {
+        const touch = e.touches[0];
+        const timer = setTimeout(() => {
+            handleTooltipShow(itemId, touch.clientX, touch.clientY);
+        }, 500); // 500ms long press
+        setLongPressTimer(timer);
+    };
+
     // --- FOOD SYSTEM ---
     const handleRightClick = (index: number) => {
         const item = player.inventory[index];
@@ -732,6 +768,10 @@ const Game: React.FC = () => {
                         <div
                             key={index}
                             onClick={() => setPlayer(p => ({ ...p, selectedSlot: index }))}
+                            onMouseEnter={(e) => item && handleTooltipShow(item.id, e.clientX, e.clientY)}
+                            onMouseLeave={handleTooltipHide}
+                            onTouchStart={(e) => item && handleLongPressStart(item.id, e)}
+                            onTouchEnd={handleTooltipHide}
                             className={`w-12 h-12 border-2 relative cursor-pointer flex items-center justify-center bg-[#d4a373] hover:bg-[#c99056]
                     ${player.selectedSlot === index ? 'border-red-500 scale-110 shadow-lg' : 'border-[#8b5e34] opacity-80'} transition-all`}
                         >
@@ -761,7 +801,26 @@ const Game: React.FC = () => {
                 <div className="text-[#5d4a2e] text-sm font-bold">Gold: {player.money}g</div>
             </div>
 
+            {/* TOOLTIP */}
+            {tooltip && (
+                <div
+                    className="absolute z-[100] bg-black/90 text-white px-3 py-2 rounded pointer-events-none"
+                    style={{ left: tooltip.x + 10, top: tooltip.y - 30 }}
+                    onClick={handleTooltipHide}
+                >
+                    <div className="font-bold text-sm">{ITEM_DB[tooltip.itemId].name}</div>
+                    {ITEM_DB[tooltip.itemId].description && (
+                        <div className="text-xs text-gray-300 mt-1">{ITEM_DB[tooltip.itemId].description}</div>
+                    )}
+                    {ITEM_DB[tooltip.itemId].edible && ITEM_DB[tooltip.itemId].energyRestore && (
+                        <div className="text-xs text-green-400 mt-1">+{ITEM_DB[tooltip.itemId].energyRestore} Energy</div>
+                    )}
+                </div>
+            )}
+
         </div>
+
+        </div >
     );
 };
 
