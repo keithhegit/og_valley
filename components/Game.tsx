@@ -35,7 +35,7 @@ const generateGrid = (scene: SceneName): TileData[][] => {
 
             if (scene === 'FARM') {
                 if ((x > 12 && y > 8) || (x === 13 && y === 9)) { type = 'WATER'; canWalk = false; }
-                if (x >= 1 && x <= 4 && y >= 1 && y <= 3) { type = 'HOUSE_FLOOR'; canWalk = false; }
+                if (x >= 1 && x <= 4 && y >= 1 && y <= 3) { type = 'GRASS'; canWalk = false; } // House footprint
                 if (x === 5 && y === 2) { objectId = 999; canWalk = false; } // Bin
                 if (x === 5 && y === 3) { objectId = 998; canWalk = false; } // Mailbox
 
@@ -330,7 +330,11 @@ const Game: React.FC = () => {
         // Collision
         if (targetTile.objectId !== null) {
             const objDef = ITEM_DB[targetTile.objectId];
-            if (objDef?.solid || objDef?.type === 'interactive' || objDef?.type === 'container') return;
+            if (objDef?.solid || objDef?.type === 'interactive' || objDef?.type === 'container') {
+                // Update facing even if blocked
+                setPlayer(prev => ({ ...prev, facing: newFacing }));
+                return;
+            }
         }
 
         // NPC Collision
@@ -894,7 +898,7 @@ const Game: React.FC = () => {
             </div>
 
             {/* PLAYER STATS */}
-            <div className="absolute top-4 right-4 z-30 bg-[#e6c697]/90 border-2 border-[#8b5e34] p-2 rounded">
+            <div className="absolute top-16 right-4 z-30 bg-[#e6c697]/90 border-2 border-[#8b5e34] p-2 rounded">
                 <div className="text-[#5d4a2e] text-sm font-bold">HP: {player.hp}/{player.maxHp}</div>
                 <div className="text-[#5d4a2e] text-sm font-bold">Energy: {player.energy}/{player.maxEnergy}</div>
                 <div className="text-[#5d4a2e] text-sm font-bold">Gold: {player.money}g</div>
