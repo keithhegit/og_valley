@@ -8,6 +8,12 @@ export const MAX_ENERGY = 100;
 export const INVENTORY_SIZE = 24;
 export const ASSET_BASE_URL = ""; // Set this to R2 URL when ready
 
+// Time System
+export const MINUTES_PER_DAY = 1440; // 24 hours * 60 minutes
+export const START_TIME = 360; // 6:00 AM (360 minutes from midnight)
+export const END_TIME = 1600; // 2:00 AM next day (26:00 = 1600 minutes)
+export const TIME_TICK_INTERVAL = 1000; // 1 second = 10 game minutes
+
 export const COLORS = {
   GRASS: '#567c2f',
   DIRT: '#f1aa6e',
@@ -26,11 +32,11 @@ export const SEASONS = ['Spring', 'Summer', 'Fall', 'Winter'];
 // --- ITEM DATABASE ---
 export const ITEM_DB: Record<number, ItemDefinition> = {
   // Environment
-  0:  { name: 'Weed', type: 'obstacle', drop: 771, sprite: 'springobjects.png', pos: [0, 0], color: '#3a5f0b' },
-  2:  { name: 'Stone Node', type: 'obstacle', drop: 390, sprite: 'springobjects.png', pos: [16, 0], color: '#757575', solid: true },
-  4:  { name: 'Twig', type: 'obstacle', drop: 388, sprite: 'springobjects.png', pos: [32, 0], color: '#5d4037', solid: true },
+  0: { name: 'Weed', type: 'obstacle', drop: 771, sprite: 'springobjects.png', pos: [0, 0], color: '#3a5f0b' },
+  2: { name: 'Stone Node', type: 'obstacle', drop: 390, sprite: 'springobjects.png', pos: [16, 0], color: '#757575', solid: true },
+  4: { name: 'Twig', type: 'obstacle', drop: 388, sprite: 'springobjects.png', pos: [32, 0], color: '#5d4037', solid: true },
   18: { name: 'Daffodil', type: 'resource', sellPrice: 30, sprite: 'springobjects.png', pos: [18, 0], color: '#ffeb3b' },
-  
+
   // Resources
   388: { name: 'Wood', type: 'resource', sellPrice: 2, sprite: 'springobjects.png', pos: [388, 0], color: '#795548' },
   390: { name: 'Stone', type: 'resource', sellPrice: 2, sprite: 'springobjects.png', pos: [390, 0], color: '#9e9e9e' },
@@ -38,8 +44,8 @@ export const ITEM_DB: Record<number, ItemDefinition> = {
 
   // Crops & Seeds
   472: { name: 'Parsnip Seeds', type: 'seed', price: 20, cropId: 24, description: 'Spring. 4 Days.', sprite: 'springobjects.png', pos: [496, 0] },
-  24:  { name: 'Parsnip', type: 'crop', sellPrice: 35, daysToGrow: 4, stages: 5, seasons: ['Spring'], sprite: 'crops.png', row: 0, color: '#e8cfb3' },
-  
+  24: { name: 'Parsnip', type: 'crop', sellPrice: 35, daysToGrow: 4, stages: 5, seasons: ['Spring'], sprite: 'crops.png', row: 0, color: '#e8cfb3', edible: true, energyRestore: 15 },
+
   474: { name: 'Potato Seeds', type: 'seed', price: 50, cropId: 192, description: 'Spring. 6 Days.', sprite: 'springobjects.png', pos: [496, 0] },
   192: { name: 'Potato', type: 'crop', sellPrice: 80, daysToGrow: 6, stages: 5, seasons: ['Spring'], chanceForExtra: 0.2, sprite: 'crops.png', row: 6, color: '#d7ccc8' },
 
@@ -52,7 +58,7 @@ export const ITEM_DB: Record<number, ItemDefinition> = {
 
   // Placeables & Containers
   130: { name: 'Chest', type: 'container', slots: 9, solid: true, description: 'Stores items.', color: '#8d6e63' },
-  
+
   // Mine
   903: { name: 'Ladder Down', type: 'warp', solid: false, color: '#212121' },
   904: { name: 'Ladder Up', type: 'warp', solid: false, color: '#212121' },

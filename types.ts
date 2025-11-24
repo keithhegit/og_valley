@@ -14,11 +14,11 @@ export interface ItemDefinition {
   pos?: [number, number]; // [x, y] coordinates in spritesheet
   color?: string; // Fallback color
   description?: string;
-  
+
   // Economy
   price?: number;
   sellPrice?: number;
-  
+
   // Tools
   action?: 'till' | 'water' | 'clear' | 'break' | 'fish' | 'attack';
   energy?: number;
@@ -41,6 +41,10 @@ export interface ItemDefinition {
   drop?: number; // ID of item dropped when broken
   solid?: boolean; // Collision
   slots?: number; // For containers
+
+  // Food
+  edible?: boolean;
+  energyRestore?: number;
 }
 
 export interface ItemInstance {
@@ -106,7 +110,8 @@ export interface Monster {
 
 export interface GameState {
   day: number;
-  time: number; // Minutes from 6:00 AM
+  time: number; // Minutes from midnight (0-1599)
   seasonIdx: number; // 0=Spring, 1=Summer...
   weather: 'SUNNY' | 'RAINY' | 'STORMY';
+  isPaused: boolean;
 }
