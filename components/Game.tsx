@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
-    GRID_W, GRID_H, TILE_SIZE, INITIAL_INVENTORY, ITEM_DB, MAX_ENERGY, NPC_DIALOGUES, COLORS, SHOP_INVENTORY, START_TIME, END_TIME, TIME_TICK_INTERVAL, SEASONS
+    GRID_H, TILE_SIZE, INITIAL_INVENTORY, ITEM_DB, MAX_ENERGY, NPC_DIALOGUES, COLORS, SHOP_INVENTORY, START_TIME, END_TIME, TIME_TICK_INTERVAL, SEASONS
 } from '../constants';
+export const GRID_W = 20;
 import {
     TileData, PlayerState, GameState, NPC, SceneName, ItemInstance, Monster, UIMode, TileType
 } from '../types';
@@ -698,7 +699,7 @@ const Game: React.FC = () => {
     const bgColor = currentScene === 'MINE' ? '#1a1a1a' : (gameState.weather === 'RAINY' ? '#1e293b' : '#1a1a1a');
 
     return (
-        <div className={`w - full h - full flex flex - col items - center justify - center relative select - none transition - colors duration - 1000`} style={{ backgroundColor: bgColor }}>
+        <div className={`w-full h-full flex flex-col items-center justify-center relative select-none transition-colors duration-1000`} style={{ backgroundColor: bgColor }}>
 
             {/* UI LAYERS */}
             {(uiMode === 'INVENTORY' || uiMode === 'CHEST') && (
@@ -733,7 +734,7 @@ const Game: React.FC = () => {
                                         e.preventDefault();
                                         if (uiMode === 'INVENTORY' || uiMode === 'CHEST') handleRightClick(i);
                                     }}
-                                    className={`w - 12 h - 12 border - 2 ${i === player.selectedSlot ? 'border-red-500 bg-[#ffccbc]' : 'border-[#8b5e34] bg-[#d4a373]'} flex items - center justify - center cursor - pointer hover: brightness - 110 relative`}>
+                                    className={`w-12 h-12 border-2 ${i === player.selectedSlot ? 'border-red-500 bg-[#ffccbc]' : 'border-[#8b5e34] bg-[#d4a373]'} flex items-center justify-center cursor-pointer hover:brightness-110 relative`}>
                                     {item && <ItemRenderer id={item.id} className="w-8 h-8 pointer-events-none" />}
                                     {item && item.count > 1 && <span className="absolute bottom-0 right-0 text-[10px] bg-black/50 text-white px-1 pointer-events-none">{item.count}</span>}
                                 </div>
@@ -872,8 +873,8 @@ const Game: React.FC = () => {
                             onMouseLeave={handleTooltipHide}
                             onTouchStart={(e) => item && handleLongPressStart(item.id, e)}
                             onTouchEnd={handleTooltipHide}
-                            className={`w - 12 h - 12 border - 2 relative cursor - pointer flex items - center justify - center bg - [#d4a373] hover: bg - [#c99056]
-                    ${player.selectedSlot === index ? 'border-red-500 scale-110 shadow-lg' : 'border-[#8b5e34] opacity-80'} transition - all`}
+                            className={`w-12 h-12 border-2 relative cursor-pointer flex items-center justify-center bg-[#d4a373] hover:bg-[#c99056]
+                    ${player.selectedSlot === index ? 'border-red-500 scale-110 shadow-lg' : 'border-[#8b5e34] opacity-80'} transition-all`}
                         >
                             {item && <ItemRenderer id={item.id} className="w-8 h-8 pointer-events-none" />}
                             {item && item.count > 1 && <span className="absolute bottom-0 right-0 text-[8px] bg-blue-600 text-white px-1 rounded-bl font-bold shadow-sm pointer-events-none">{item.count}</span>}
@@ -881,14 +882,16 @@ const Game: React.FC = () => {
                         </div>
                     ))}
                     <div className="ml-2 flex items-center justify-center text-[10px] text-[#5d4a2e] font-bold opacity-50">
-                        PRESS 'E'
+                        按 'E' 键
                     </div>
                 </div>
             )}
 
             {/* TIME & SCENE INDICATOR */}
             <div className="absolute top-4 right-4 z-30 pointer-events-none text-right">
-                <h1 className="text-white font-bold text-shadow text-xl uppercase tracking-widest opacity-80">{currentScene}</h1>
+                <h1 className="text-white font-bold text-shadow text-xl uppercase tracking-widest opacity-80">
+                    {currentScene === 'FARM' ? '农场' : currentScene === 'TOWN' ? '小镇' : currentScene === 'MINE' ? '矿井' : '小屋'}
+                </h1>
                 <div className="text-white font-bold text-shadow mt-1 opacity-90">
                     第 {gameState.day} 天, {SEASONS[gameState.seasonIdx]} | {Math.floor(gameState.time / 60)}:{(gameState.time % 60).toString().padStart(2, '0')}
                 </div>

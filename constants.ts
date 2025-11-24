@@ -1,7 +1,7 @@
 
 import { ItemDefinition, ItemInstance } from "./types";
 
-export const GRID_W = 16;
+export const GRID_W = 20;
 export const GRID_H = 12;
 export const TILE_SIZE = 48;
 export const MAX_ENERGY = 100;
