@@ -86,7 +86,7 @@ INITIAL_INVENTORY[3] = { id: 104, count: 1 }; // Pickaxe
 INITIAL_INVENTORY[4] = { id: 105, count: 1 }; // Sword
 INITIAL_INVENTORY[5] = { id: 106, count: 1 }; // Scythe
 INITIAL_INVENTORY[6] = { id: 107, count: 1 }; // Rod
-INITIAL_INVENTORY[7] = { id: 472, count: 5 }; // Parsnip Seeds
+INITIAL_INVENTORY[7] = { id: 472, count: 15 }; // Parsnip Seeds
 INITIAL_INVENTORY[8] = { id: 130, count: 1 }; // Free Chest
 
 export const NPC_DIALOGUES: Record<string, Record<string, string[]>> = {

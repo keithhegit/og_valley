@@ -1,6 +1,6 @@
 import type { PlayerState, GameState, TileData, NPC, Monster, ItemInstance, SceneName } from '../types';
 
-export const SAVE_KEY = 'OG_VALLEY_SAVE_V1';
+export const SAVE_KEY = 'OG_VALLEY_SAVE_V2';
 
 export interface SaveData {
     player: PlayerState;
