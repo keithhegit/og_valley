@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
     GRID_W, GRID_H, TILE_SIZE, INITIAL_INVENTORY, ITEM_DB, MAX_ENERGY, NPC_DIALOGUES, COLORS, SHOP_INVENTORY, START_TIME, END_TIME, TIME_TICK_INTERVAL, SEASONS
@@ -123,6 +122,10 @@ const Game: React.FC = () => {
     const [containers, setContainers] = useState<Record<string, (ItemInstance | null)[]>>({}); // Key: "FARM_5_5"
     const [activeContainer, setActiveContainer] = useState<string | null>(null);
 
+    // Version Info
+    const BRANCH = "phase5";
+    const COMMIT = "1f754bc";
+
     const [uiMode, setUiMode] = useState<UIMode>('PLAYING');
     const [message, setMessage] = useState<string | null>(null);
     const [dialogue, setDialogue] = useState<{ speaker: string, text: string } | null>(null);
@@ -236,12 +239,12 @@ const Game: React.FC = () => {
                     // Attack player
                     setPlayer(p => {
                         const newHp = Math.max(0, p.hp - m.damage);
-                        if (newHp < p.hp) spawnFloatingText(p.x, p.y, `-${m.damage}`, 'red');
+                        if (newHp < p.hp) spawnFloatingText(p.x, p.y, `- ${m.damage} `, 'red');
 
                         // Check for death
                         if (newHp <= 0) {
-                            const moneyLost = Math.floor(p.money * 0.1);
-                            setMessage(`你昏倒了... 失去 ${moneyLost}g`);
+                            const moneyLost = Math.min(1000, Math.floor(p.money * 0.1)); // Wiki: max 1000g
+                            setMessage(`你昏倒了... 失去 ${moneyLost} g`);
                             setTimeout(() => setMessage(null), 3000);
 
                             // Penalty and reset
@@ -379,7 +382,7 @@ const Game: React.FC = () => {
             const hitMonster = monstersRef.current.find(m => m.scene === currentScene && m.x === tx && m.y === ty);
             if (hitMonster) {
                 const damage = Math.floor(Math.random() * 3) + 2; // Simple dmg
-                spawnFloatingText(tx, ty, `${damage}`, '#fff');
+                spawnFloatingText(tx, ty, `${damage} `, '#fff');
                 setMonsters(prev => {
                     return prev.map(m => m.id === hitMonster.id ? { ...m, hp: m.hp - damage } : m)
                         .filter(m => m.hp > 0);
@@ -425,7 +428,7 @@ const Game: React.FC = () => {
                         const n = [...p.inventory]; n[p.selectedSlot] = null;
                         return { ...p, money: p.money + val, inventory: n };
                     });
-                    spawnFloatingText(tx, ty, `+${val}g`, 'gold');
+                    spawnFloatingText(tx, ty, `+ ${val} g`, 'gold');
                 }
             }
             return;
@@ -433,7 +436,7 @@ const Game: React.FC = () => {
 
         // Chest Open
         if (targetTile.objectId === 130) {
-            const containerKey = `${currentScene}_${tx}_${ty}`;
+            const containerKey = `${currentScene}_${tx}_${ty} `;
             if (!containers[containerKey]) {
                 setContainers(prev => ({ ...prev, [containerKey]: Array(9).fill(null) }));
             }
@@ -454,7 +457,7 @@ const Game: React.FC = () => {
                 const def = ITEM_DB[tile.crop.id];
                 setTimeout(() => {
                     addToInventory(tile.crop!.id, 1);
-                    spawnFloatingText(tx, ty, `+1 ${def.name}`, 'lime');
+                    spawnFloatingText(tx, ty, `+ 1 ${def.name} `, 'lime');
                 }, 0);
                 tile.crop = undefined;
                 tile.isTilled = false;
@@ -640,7 +643,7 @@ const Game: React.FC = () => {
                 newInv[index]!.count -= 1;
                 if (newInv[index]!.count <= 0) newInv[index] = null;
 
-                spawnFloatingText(p.x, p.y, `+${def.energyRestore} Energy`, 'lime');
+                spawnFloatingText(p.x, p.y, `+ ${def.energyRestore} Energy`, 'lime');
                 return { ...p, energy: newEnergy, inventory: newInv };
             });
         } else {
@@ -691,7 +694,7 @@ const Game: React.FC = () => {
     const bgColor = currentScene === 'MINE' ? '#1a1a1a' : (gameState.weather === 'RAINY' ? '#1e293b' : '#1a1a1a');
 
     return (
-        <div className={`w-full h-full flex flex-col items-center justify-center relative select-none transition-colors duration-1000`} style={{ backgroundColor: bgColor }}>
+        <div className={`w - full h - full flex flex - col items - center justify - center relative select - none transition - colors duration - 1000`} style={{ backgroundColor: bgColor }}>
 
             {/* UI LAYERS */}
             {(uiMode === 'INVENTORY' || uiMode === 'CHEST') && (
@@ -706,7 +709,7 @@ const Game: React.FC = () => {
                             <div className="bg-[#d7ccc8] p-2 rounded border-2 border-[#8d6e63]">
                                 <div className="grid grid-cols-9 gap-1 mb-4">
                                     {containers[activeContainer]?.map((item, i) => (
-                                        <div key={`c-${i}`}
+                                        <div key={`c - ${i} `}
                                             onClick={() => handleSlotClick(i, 'CHEST')}
                                             className="w-10 h-10 border border-[#8b5e34] bg-[#a1887f] flex items-center justify-center cursor-pointer hover:bg-[#8d6e63]">
                                             {item && <ItemRenderer id={item.id} className="w-8 h-8" />}
@@ -726,7 +729,7 @@ const Game: React.FC = () => {
                                         e.preventDefault();
                                         if (uiMode === 'INVENTORY' || uiMode === 'CHEST') handleRightClick(i);
                                     }}
-                                    className={`w-12 h-12 border-2 ${i === player.selectedSlot ? 'border-red-500 bg-[#ffccbc]' : 'border-[#8b5e34] bg-[#d4a373]'} flex items-center justify-center cursor-pointer hover:brightness-110 relative`}>
+                                    className={`w - 12 h - 12 border - 2 ${i === player.selectedSlot ? 'border-red-500 bg-[#ffccbc]' : 'border-[#8b5e34] bg-[#d4a373]'} flex items - center justify - center cursor - pointer hover: brightness - 110 relative`}>
                                     {item && <ItemRenderer id={item.id} className="w-8 h-8 pointer-events-none" />}
                                     {item && item.count > 1 && <span className="absolute bottom-0 right-0 text-[10px] bg-black/50 text-white px-1 pointer-events-none">{item.count}</span>}
                                 </div>
@@ -769,7 +772,7 @@ const Game: React.FC = () => {
                     {grid.map((row, y) => (
                         row.map((tile, x) => (
                             <div
-                                key={`${x}-${y}`}
+                                key={`${x} -${y} `}
                                 className="absolute cursor-pointer"
                                 style={{ left: x * TILE_SIZE, top: y * TILE_SIZE, width: TILE_SIZE, height: TILE_SIZE }}
                                 onClick={() => {
@@ -823,13 +826,13 @@ const Game: React.FC = () => {
                     {monsters.filter(m => m.scene === currentScene).map(m => (
                         <div key={m.id} className="absolute transition-all duration-300 ease-linear z-20" style={{ left: m.x * TILE_SIZE, top: m.y * TILE_SIZE, width: TILE_SIZE, height: TILE_SIZE }}>
                             <SlimeSprite className="w-full h-full" />
-                            <div className="absolute -top-2 left-0 w-full h-1 bg-red-900"><div className="h-full bg-red-500" style={{ width: `${(m.hp / m.maxHp) * 100}%` }}></div></div>
+                            <div className="absolute -top-2 left-0 w-full h-1 bg-red-900"><div className="h-full bg-red-500" style={{ width: `${(m.hp / m.maxHp) * 100}% ` }}></div></div>
                         </div>
                     ))}
 
                     <div className="absolute transition-all duration-200 z-20" style={{ left: player.x * TILE_SIZE, top: player.y * TILE_SIZE, width: TILE_SIZE, height: TILE_SIZE }}>
                         <PlayerSprite
-                            className={`w-full h-full scale-110 -translate-y-2 ${isSwinging ? 'animate-bounce' : ''}`}
+                            className={`w - full h - full scale - 110 - translate - y - 2 ${isSwinging ? 'animate-bounce' : ''} `}
                             facing={player.facing}
                             walking={walkFrame === 1}
                         />
@@ -865,8 +868,8 @@ const Game: React.FC = () => {
                             onMouseLeave={handleTooltipHide}
                             onTouchStart={(e) => item && handleLongPressStart(item.id, e)}
                             onTouchEnd={handleTooltipHide}
-                            className={`w-12 h-12 border-2 relative cursor-pointer flex items-center justify-center bg-[#d4a373] hover:bg-[#c99056]
-                    ${player.selectedSlot === index ? 'border-red-500 scale-110 shadow-lg' : 'border-[#8b5e34] opacity-80'} transition-all`}
+                            className={`w - 12 h - 12 border - 2 relative cursor - pointer flex items - center justify - center bg - [#d4a373] hover: bg - [#c99056]
+                    ${player.selectedSlot === index ? 'border-red-500 scale-110 shadow-lg' : 'border-[#8b5e34] opacity-80'} transition - all`}
                         >
                             {item && <ItemRenderer id={item.id} className="w-8 h-8 pointer-events-none" />}
                             {item && item.count > 1 && <span className="absolute bottom-0 right-0 text-[8px] bg-blue-600 text-white px-1 rounded-bl font-bold shadow-sm pointer-events-none">{item.count}</span>}
@@ -885,6 +888,9 @@ const Game: React.FC = () => {
                 <div className="text-white font-bold text-shadow mt-1 opacity-90">
                     Day {gameState.day}, {SEASONS[gameState.seasonIdx]} | {Math.floor(gameState.time / 60)}:{(gameState.time % 60).toString().padStart(2, '0')}
                 </div>
+                <div className="text-white/50 text-[10px] font-mono mt-1">
+                    {BRANCH}@{COMMIT}
+                </div>
             </div>
 
             {/* PLAYER STATS */}
@@ -895,22 +901,20 @@ const Game: React.FC = () => {
             </div>
 
             {/* TOOLTIP */}
-            {tooltip && (
+            {tooltip && ITEM_DB[tooltip.itemId] && (
                 <div
-                    className="absolute z-[100] bg-black/90 text-white px-3 py-2 rounded pointer-events-none"
-                    style={{ left: tooltip.x + 10, top: tooltip.y - 30 }}
-                    onClick={handleTooltipHide}
+                    className="absolute z-[9999] bg-black/90 text-white px-3 py-2 rounded pointer-events-none border border-white/20 shadow-xl"
+                    style={{ left: tooltip.x + 15, top: tooltip.y - 40 }}
                 >
-                    <div className="font-bold text-sm">{ITEM_DB[tooltip.itemId].name}</div>
+                    <div className="font-bold text-sm text-yellow-200">{ITEM_DB[tooltip.itemId].name}</div>
                     {ITEM_DB[tooltip.itemId].description && (
-                        <div className="text-xs text-gray-300 mt-1">{ITEM_DB[tooltip.itemId].description}</div>
+                        <div className="text-xs text-gray-300 mt-1 max-w-[200px]">{ITEM_DB[tooltip.itemId].description}</div>
                     )}
                     {ITEM_DB[tooltip.itemId].edible && ITEM_DB[tooltip.itemId].energyRestore && (
                         <div className="text-xs text-green-400 mt-1">+{ITEM_DB[tooltip.itemId].energyRestore} Energy</div>
                     )}
                 </div>
             )}
-
         </div>
     );
 };

@@ -50,7 +50,7 @@ export const ITEM_DB: Record<number, ItemDefinition> = {
 
   // Crops & Seeds
   472: { name: 'Parsnip Seeds', type: 'seed', price: 20, cropId: 24, description: 'Spring. 4 Days.', sprite: 'springobjects.png', pos: [496, 0] },
-  24: { name: 'Parsnip', type: 'crop', sellPrice: 35, daysToGrow: 4, stages: 5, seasons: ['Spring'], sprite: 'crops.png', row: 0, color: '#e8cfb3', edible: true, energyRestore: 15 },
+  24: { name: 'Parsnip', type: 'crop', sellPrice: 35, daysToGrow: 4, stages: 5, seasons: ['Spring'], sprite: 'crops.png', row: 0, color: '#e8cfb3', edible: true, energyRestore: 25 },
 
   474: { name: 'Potato Seeds', type: 'seed', price: 50, cropId: 192, description: 'Spring. 6 Days.', sprite: 'springobjects.png', pos: [496, 0] },
   192: { name: 'Potato', type: 'crop', sellPrice: 80, daysToGrow: 6, stages: 5, seasons: ['Spring'], chanceForExtra: 0.2, sprite: 'crops.png', row: 6, color: '#d7ccc8' },
