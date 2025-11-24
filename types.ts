@@ -95,6 +95,8 @@ export interface NPC {
   x: number;
   y: number;
   facing: 'LEFT' | 'RIGHT';
+  affection?: number; // 0-250 (10 hearts * 25 points per heart)
+  lastTalked?: number; // Game day when last talked
 }
 
 export interface Monster {

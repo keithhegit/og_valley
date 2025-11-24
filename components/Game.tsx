@@ -11,6 +11,7 @@ import {
 } from './PixelArt';
 import { Trash2, Box, ArrowRight } from 'lucide-react';
 import { saveGame, loadGame } from '../utils/saveSystem';
+import { playSound } from '../utils/audioSystem';
 
 // --- HELPERS ---
 
@@ -128,6 +129,8 @@ const Game: React.FC = () => {
     const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
     const [tooltip, setTooltip] = useState<{ itemId: number, x: number, y: number } | null>(null);
     const [longPressTimer, setLongPressTimer] = useState<number | null>(null);
+    const [isSwinging, setIsSwinging] = useState(false);
+    const [walkFrame, setWalkFrame] = useState(0);
 
     const playerRef = useRef(player);
     const gameStateRef = useRef(gameState);
@@ -335,6 +338,8 @@ const Game: React.FC = () => {
         }
 
         setPlayer(prev => ({ ...prev, x: newX, y: newY, facing: newFacing }));
+        setWalkFrame(prev => (prev + 1) % 2);
+        playSound('step');
     }, [grids, currentScene, uiMode, npcs]);
 
     const addToInventory = (itemId: number, count: number) => {
@@ -388,8 +393,21 @@ const Game: React.FC = () => {
         const targetNPC = npcs.find(n => n.scene === currentScene && n.x === tx && n.y === ty);
         if (targetNPC) {
             const lines = NPC_DIALOGUES[targetNPC.variant][gameState.weather] || NPC_DIALOGUES[targetNPC.variant]['SUNNY'];
+
+            // Grant affection if not talked today
+            const canGainAffection = !targetNPC.lastTalked || targetNPC.lastTalked < gameState.day;
+            if (canGainAffection) {
+                setNpcs(prev => prev.map(n =>
+                    n.id === targetNPC.id
+                        ? { ...n, affection: Math.min(250, (n.affection || 0) + 10), lastTalked: gameState.day }
+                        : n
+                ));
+                spawnFloatingText(tx, ty, '+10 💚', 'lime');
+            }
+
             setDialogue({ speaker: targetNPC.name, text: lines[Math.floor(Math.random() * lines.length)] });
             setUiMode('DIALOGUE');
+            playSound('pickup');
             return;
         }
 
@@ -397,7 +415,7 @@ const Game: React.FC = () => {
         const targetTile = grids[currentScene][ty][tx];
 
         // 3. Object Interaction
-        if (targetTile.objectId === 998) { setUiMode('SHOP'); return; }
+        if (targetTile.objectId === 998) { setUiMode('SHOP'); playSound('pickup'); return; }
         if (targetTile.objectId === 999) { /* Shipping Logic */
             if (slotItem) {
                 const def = ITEM_DB[slotItem.id];
@@ -471,15 +489,18 @@ const Game: React.FC = () => {
 
                 if (tool.action === 'till' && !tile.objectId && tile.type === 'GRASS') {
                     tile.type = 'DIRT'; tile.isTilled = true; success = true;
+                    playSound('dig');
                 }
                 if (tool.action === 'water' && tile.isTilled) {
                     tile.isWatered = true; success = true;
+                    playSound('water');
                 }
                 if (tool.action === 'break' && tile.objectId && ITEM_DB[tile.objectId]?.type === 'obstacle') {
                     // Drop item
                     const dropId = ITEM_DB[tile.objectId].drop;
                     if (dropId) setTimeout(() => addToInventory(dropId, 1), 0);
                     tile.objectId = null; success = true;
+                    playSound('hit');
                 }
                 if (tool.type === 'seed' && tile.isTilled && !tile.crop && !tile.objectId) {
                     // Check season
@@ -501,13 +522,20 @@ const Game: React.FC = () => {
                         });
                     }, 0);
                     success = true;
+                    playSound('plant');
                 }
 
-                // Deduct energy on successful tool use
+                // Deduct energy and trigger animation
                 if (success && tool.energy) {
                     setTimeout(() => {
                         setPlayer(p => ({ ...p, energy: Math.max(0, p.energy - tool.energy!) }));
                     }, 0);
+                }
+
+                // Trigger swing animation for tools
+                if (success && tool.action) {
+                    setIsSwinging(true);
+                    setTimeout(() => setIsSwinging(false), 300);
                 }
             }
 
@@ -800,7 +828,11 @@ const Game: React.FC = () => {
                     ))}
 
                     <div className="absolute transition-all duration-200 z-20" style={{ left: player.x * TILE_SIZE, top: player.y * TILE_SIZE, width: TILE_SIZE, height: TILE_SIZE }}>
-                        <PlayerSprite className="w-full h-full scale-110 -translate-y-2" facing={player.facing} walking={false} />
+                        <PlayerSprite
+                            className={`w-full h-full scale-110 -translate-y-2 ${isSwinging ? 'animate-bounce' : ''}`}
+                            facing={player.facing}
+                            walking={walkFrame === 1}
+                        />
                     </div>
 
                     {floatingTexts.map(ft => (
