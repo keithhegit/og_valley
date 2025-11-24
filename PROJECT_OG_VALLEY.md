@@ -1,56 +1,56 @@
-# Og Valley: Project Documentation
+# Og Valley: 项目文档
 
-## 1. Product Requirement Document (PRD)
+## 1. 产品需求文档 (PRD)
 
-### 1.1 Product Overview
-**Og Valley** is a web-based farming RPG inspired by Stardew Valley, built with React and modern web technologies. It aims to provide an instant-play experience with no downloads, featuring farming, exploration, combat, and economic systems.
+### 1.1 产品概述
+**Og Valley** 是一款基于 React 和现代 Web 技术构建的网页版农业 RPG，灵感来源于《星露谷物语》。它旨在提供即点即玩、无需下载的游戏体验，包含耕种、探索、战斗和经济系统。
 
-### 1.2 Core Gameplay Loop
-1.  **Gather**: Use tools to collect wood, stone, and fiber.
-2.  **Farm**: Till soil, plant seeds, water crops, and harvest produce.
-3.  **Trade**: Ship crops for gold or buy seeds/items from shops.
-4.  **Explore**: Travel between the Farm, Town, and Mines.
-5.  **Combat**: Fight monsters in the mines to survive and loot.
+### 1.2 核心玩法循环
+1.  **采集**: 使用工具收集木材、石头和纤维。
+2.  **耕种**: 开垦土地、播种、浇水并收获农作物。
+3.  **交易**: 出售农作物换取金币，或从商店购买种子/物品。
+4.  **探索**: 在农场、城镇和矿井之间穿梭。
+5.  **战斗**: 在矿井中与怪物战斗以生存并获取战利品。
 
-### 1.3 Key Features
--   **Character System**: HP, Energy, Money, and Inventory management.
--   **Inventory & Storage**:
-    -   24-slot backpack (expandable UI).
-    -   Placeable Chests for item storage.
-    -   Drag-and-drop item management.
--   **World System**:
-    -   **Farm**: Main base for building and farming.
-    -   **Town**: Social hub with NPCs (Mayor Lewis, Granny).
-    -   **Mine**: Dangerous area with monsters (Slimes) and resources.
--   **Interaction**:
-    -   Tool usage (Hoe, Watering Can, Axe, Pickaxe, Sword).
-    -   Object interaction (Chests, Shipping Bin, Mailbox).
-    -   NPC Dialogue system.
+### 1.3 关键特性
+-   **角色系统**: 生命值 (HP)、体力 (Energy)、金钱 (Money) 和库存管理。
+-   **库存与存储**:
+    -   24 格背包 (可扩展 UI)。
+    -   可放置的箱子用于存储物品。
+    -   拖拽式物品管理。
+-   **世界系统**:
+    -   **农场**: 建设和耕种的主要基地。
+    -   **城镇**: 拥有 NPC (镇长 Lewis, 奶奶 Granny) 的社交中心。
+    -   **矿井**: 充满怪物 (史莱姆) 和资源的危险区域。
+-   **交互**:
+    -   工具使用 (锄头, 喷壶, 斧头, 镐子, 剑)。
+    -   对象交互 (箱子, 出货箱, 邮箱)。
+    -   NPC 对话系统。
 
 ---
 
-## 2. Technical Architecture
+## 2. 技术架构
 
-### 2.1 Tech Stack
--   **Frontend**: React 18 (Hooks + Functional Components)
--   **Build Tool**: Vite
--   **Language**: TypeScript
--   **Styling**: Tailwind CSS + Inline Styles for dynamic positioning
--   **Icons**: Lucide React
+### 2.1 技术栈
+-   **前端**: React 18 (Hooks + Functional Components)
+-   **构建工具**: Vite
+-   **语言**: TypeScript
+-   **样式**: Tailwind CSS + Inline Styles (用于动态定位)
+-   **图标**: Lucide React
 
-### 2.2 Core Architecture
--   **Game Loop**: React State-driven pseudo-realtime loop. `useEffect` handles timers (monsters, floating text) while user input triggers immediate state updates.
--   **Data Model**:
-    -   **ID-Driven**: All objects, items, and tiles are referenced by integer IDs defined in `ITEM_DB`.
-    -   **Grid System**: `TileData[][]` represents the map.
-    -   **Multi-Scene**: State holds a record of grids `Record<SceneName, TileData[][]>`.
--   **Rendering**:
-    -   **Hybrid Renderer**: Uses CSS-based pixel art components (`PixelArt.tsx`) mapped from Item IDs.
-    -   **Virtual DOM**: React efficiently updates only changed tiles.
+### 2.2 核心架构
+-   **游戏循环**: React State 驱动的伪实时循环。`useEffect` 处理定时器 (怪物, 浮动文字)，而用户输入触发即时状态更新。
+-   **数据模型**:
+    -   **ID 驱动**: 所有对象、物品和地块都由 `ITEM_DB` 中定义的整数 ID 引用。
+    -   **网格系统**: `TileData[][]` 表示地图。
+    -   **多场景**: 状态保存所有场景的网格数据 `Record<SceneName, TileData[][]>`。
+-   **渲染**:
+    -   **混合渲染器**: 使用基于 CSS 的像素艺术组件 (`PixelArt.tsx`)，根据物品 ID 进行映射。
+    -   **虚拟 DOM**: React 高效地仅更新变化的图块。
 
-### 2.3 Data Structures
-**Item Database (`ITEM_DB`)**:
-Static configuration mapping IDs to properties (name, type, sprite, stats).
+### 2.3 数据结构
+**物品数据库 (`ITEM_DB`)**:
+静态配置表，将 ID 映射到属性 (名称, 类型, 精灵图, 属性)。
 ```typescript
 const ITEM_DB = {
   2: { name: 'Stone Node', type: 'obstacle', drop: 390, ... },
@@ -59,45 +59,45 @@ const ITEM_DB = {
 }
 ```
 
-**State Management**:
--   `player`: Position, stats, inventory.
--   `grids`: Map data for all scenes.
--   `containers`: Persistent storage for chests (`Scene_X_Y` keys).
--   `monsters`: Array of active entities.
+**状态管理**:
+-   `player`: 位置, 属性, 库存。
+-   `grids`: 所有场景的地图数据。
+-   `containers`: 箱子的持久化存储 (`Scene_X_Y` 作为键)。
+-   `monsters`: 活动实体数组。
 
 ---
 
-## 3. Roadmap & Status
+## 3. 路线图与状态
 
-### ✅ Phase 1: Foundation (Completed)
--   Core Engine (Grid, Player Movement)
--   Basic Farming (Till, Water, Harvest)
--   Resource Gathering (Trees, Rocks)
+### ✅ 第一阶段：基础建设 (已完成)
+-   核心引擎 (网格, 玩家移动)
+-   基础耕种 (耕地, 浇水, 收获)
+-   资源采集 (树木, 岩石)
 
-### ✅ Phase 2: Economy & Data (Completed)
--   ID-based Item System (`ITEM_DB`)
--   Shipping Bin & Mailbox Shop
--   Floating Text Feedback
+### ✅ 第二阶段：经济与数据 (已完成)
+-   基于 ID 的物品系统 (`ITEM_DB`)
+-   出货箱与邮箱商店
+-   浮动文字反馈
 
-### ✅ Phase 3: Inventory & Storage (Completed)
--   [x] Full Backpack UI ('E' key)
--   [x] Chest System (Place/Open/Store)
--   [x] Drag & Drop Item Management
--   [x] Trash Can functionality
+### ✅ 第三阶段：库存与存储 (已完成)
+-   [x] 完整背包 UI (按 'E' 键)
+-   [x] 箱子系统 (放置/打开/存储)
+-   [x] 拖拽物品管理
+-   [x] 垃圾桶功能
 
-### ✅ Phase 4: World & Combat (Completed)
--   [x] Multi-Scene Architecture (Farm, Town, Mine)
--   [x] Warp Points (Scene transitions)
--   [x] Basic Combat (Sword vs Slimes)
--   [x] Monster AI (Simple chase)
+### ✅ 第四阶段：世界与战斗 (已完成)
+-   [x] 多场景架构 (农场, 城镇, 矿井)
+-   [x] 传送点 (场景切换)
+-   [x] 基础战斗 (剑 vs 史莱姆)
+-   [x] 怪物 AI (简单追逐)
 
-### 🚧 Phase 5: Polish & Persistence (Next Steps)
--   [ ] **Save System**: Persist `grids`, `player`, and `containers` to `localStorage`.
--   [ ] **Audio**: Implement sound effects for actions and background music.
--   [ ] **Visuals**: Add tool animations and player walking frames.
--   [ ] **Mobile Support**: Touch controls for movement and interaction.
+### 🚧 第五阶段：打磨与持久化 (下一步)
+-   [ ] **存档系统**: 将 `grids`, `player`, 和 `containers` 持久化到 `localStorage`。
+-   [ ] **音频**: 实现动作音效和背景音乐。
+-   [ ] **视觉效果**: 添加工具动画和玩家行走帧。
+-   [ ] **移动端支持**: 移动和交互的触摸控制。
 
-### 🔮 Future Phases
--   **Phase 6**: Advanced Farming (Seasons, more crops).
--   **Phase 7**: Social (NPC schedules, relationship hearts).
--   **Phase 8**: House Customization (Furniture, upgrades).
+### 🔮 未来阶段
+-   **第六阶段**: 进阶耕种 (季节, 更多作物)。
+-   **第七阶段**: 社交 (NPC 日程表, 好感度)。
+-   **第八阶段**: 房屋自定义 (家具, 升级)。
