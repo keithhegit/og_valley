@@ -38,7 +38,21 @@
 -   **样式**: Tailwind CSS + Inline Styles (用于动态定位)
 -   **图标**: Lucide React
 
-### 2.2 核心架构
+### 2.2 部署与基础设施 (Cloudflare)
+本项目采用 **Cloudflare 全栈架构** 进行构建与部署：
+
+-   **Cloudflare Pages**: 
+    -   用于托管前端静态资源 (React/Vite 构建产物)。
+    -   提供全球 CDN 加速与自动 CI/CD 构建。
+-   **Cloudflare R2**: 
+    -   作为对象存储，存放游戏美术资源 (Sprite Sheets, 音频文件)。
+    -   替代传统服务器文件存储，降低带宽成本。
+    -   在 `constants.ts` 中配置 `ASSET_BASE_URL` 指向 R2 自定义域名。
+-   **Cloudflare Workers**:
+    -   (规划中) 用于处理后端逻辑，如多人游戏状态同步、排行榜或云存档 API。
+    -   提供无服务器计算能力，低延迟响应。
+
+### 2.3 核心架构
 -   **游戏循环**: React State 驱动的伪实时循环。`useEffect` 处理定时器 (怪物, 浮动文字)，而用户输入触发即时状态更新。
 -   **数据模型**:
     -   **ID 驱动**: 所有对象、物品和地块都由 `ITEM_DB` 中定义的整数 ID 引用。
@@ -48,7 +62,7 @@
     -   **混合渲染器**: 使用基于 CSS 的像素艺术组件 (`PixelArt.tsx`)，根据物品 ID 进行映射。
     -   **虚拟 DOM**: React 高效地仅更新变化的图块。
 
-### 2.3 数据结构
+### 2.4 数据结构
 **物品数据库 (`ITEM_DB`)**:
 静态配置表，将 ID 映射到属性 (名称, 类型, 精灵图, 属性)。
 ```typescript
@@ -92,7 +106,8 @@ const ITEM_DB = {
 -   [x] 怪物 AI (简单追逐)
 
 ### 🚧 第五阶段：打磨与持久化 (下一步)
--   [ ] **存档系统**: 将 `grids`, `player`, 和 `containers` 持久化到 `localStorage`。
+-   [ ] **Cloudflare 集成**: 配置 Pages 部署与 R2 资源链接。
+-   [ ] **存档系统**: 将 `grids`, `player`, 和 `containers` 持久化到 `localStorage` (未来迁移至 Workers KV)。
 -   [ ] **音频**: 实现动作音效和背景音乐。
 -   [ ] **视觉效果**: 添加工具动画和玩家行走帧。
 -   [ ] **移动端支持**: 移动和交互的触摸控制。

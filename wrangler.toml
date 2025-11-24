@@ -1,0 +1,17 @@
+name = "og-valley"
+compatibility_date = "2024-04-05"
+pages_build_output_dir = "dist"
+
+# Cloudflare Pages Configuration
+[pages]
+  build_command = "npm run build"
+  build_output_directory = "dist"
+
+# R2 Bucket Configuration (Uncomment when ready)
+# [[r2_buckets]]
+#   binding = "OG_VALLEY_ASSETS"
+#   bucket_name = "og-valley-assets"
+
+# Worker Configuration (For future backend)
+# [vars]
+#   ENVIRONMENT = "production"
