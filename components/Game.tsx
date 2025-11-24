@@ -46,6 +46,9 @@ const generateGrid = (scene: SceneName): TileData[][] => {
 
                 // Town Warp
                 if (x === GRID_W - 1) warp = { target: 'TOWN', x: 1, y: 5 };
+
+                // House Door (front of house)
+                if (x === 2 && y === 3) warp = { target: 'HOUSE', x: 7, y: 9 };
             }
             else if (scene === 'TOWN') {
                 type = 'STONE_FLOOR';
@@ -58,7 +61,25 @@ const generateGrid = (scene: SceneName): TileData[][] => {
             else if (scene === 'MINE') {
                 type = 'DARK_DIRT';
                 if (x === 1 && y === 1) { objectId = 904; warp = { target: 'TOWN', x: GRID_W - 2, y: 1 }; } // Ladder Up
-                if (Math.random() < 0.15 && x > 2) objectId = 2; // Rocks
+
+                // Generate ore nodes
+                if (x > 2 && Math.random() < 0.15) {
+                    const rand = Math.random();
+                    if (rand < 0.05) objectId = 77; // Gold (5%)
+                    else if (rand < 0.20) objectId = 76; // Iron (15%)
+                    else if (rand < 0.50) objectId = 75; // Copper (30%)
+                    else objectId = 2; // Stone (50%)
+                }
+            }
+            else if (scene === 'HOUSE') {
+                type = 'HOUSE_FLOOR';
+                // Exit door
+                if (x === 7 && y === 9) warp = { target: 'FARM', x: 2, y: 4 };
+
+                // Furniture
+                if (x >= 3 && x <= 5 && y === 2) { canWalk = false; } // Bed
+                if (x === 10 && y === 5) { canWalk = false; } // TV
+                if (x === 2 && y === 5) objectId = 130; // Chest
             }
 
             row.push({ x, y, type, objectId, isTilled: false, isWatered: false, canWalk, warp });
@@ -78,7 +99,8 @@ const Game: React.FC = () => {
     const [grids, setGrids] = useState<Record<SceneName, TileData[][]>>({
         FARM: generateGrid('FARM'),
         TOWN: generateGrid('TOWN'),
-        MINE: generateGrid('MINE')
+        MINE: generateGrid('MINE'),
+        HOUSE: generateGrid('HOUSE')
     });
 
     const [player, setPlayer] = useState<PlayerState>({
@@ -137,6 +159,7 @@ const Game: React.FC = () => {
             setGameState(prev => {
                 let newTime = prev.time + 10; // 10 minutes per second
                 let newDay = prev.day;
+                let newSeasonIdx = prev.seasonIdx;
 
                 // Forced sleep at 2:00 AM
                 if (newTime >= END_TIME) {
@@ -145,6 +168,13 @@ const Game: React.FC = () => {
 
                     newTime = START_TIME; // Reset to 6:00 AM
                     newDay = prev.day + 1;
+
+                    // Season change every 28 days
+                    if (newDay > 28) {
+                        newDay = 1;
+                        newSeasonIdx = (prev.seasonIdx + 1) % 4;
+                        setMessage(`${SEASONS[newSeasonIdx]} 到来了！`);
+                    }
 
                     // Reset player position to spawn point (Farm 6, 4) - outside house
                     setPlayer(p => ({ ...p, x: 6, y: 4, energy: p.maxEnergy, hp: p.maxHp }));
@@ -156,7 +186,7 @@ const Game: React.FC = () => {
                             player: playerRef.current,
                             grids,
                             containers,
-                            gameState: { ...prev, time: newTime, day: newDay },
+                            gameState: { ...prev, time: newTime, day: newDay, seasonIdx: newSeasonIdx },
                             monsters: monstersRef.current,
                             npcs,
                             currentScene: 'FARM'
@@ -164,7 +194,7 @@ const Game: React.FC = () => {
                     }, 100);
                 }
 
-                return { ...prev, time: newTime, day: newDay };
+                return { ...prev, time: newTime, day: newDay, seasonIdx: newSeasonIdx };
             });
         }, TIME_TICK_INTERVAL);
 
@@ -452,6 +482,16 @@ const Game: React.FC = () => {
                     tile.objectId = null; success = true;
                 }
                 if (tool.type === 'seed' && tile.isTilled && !tile.crop && !tile.objectId) {
+                    // Check season
+                    const cropDef = ITEM_DB[tool.cropId!];
+                    if (!cropDef.seasons?.includes(SEASONS[gameStateRef.current.seasonIdx])) {
+                        setTimeout(() => {
+                            setMessage("不适合当前季节种植！");
+                            setTimeout(() => setMessage(null), 1500);
+                        }, 0);
+                        return prevGrids;
+                    }
+
                     tile.crop = { id: tool.cropId!, stage: 0, daysGrown: 0, isWatered: false, dead: false };
                     setTimeout(() => {
                         setPlayer(p => {
@@ -700,7 +740,28 @@ const Game: React.FC = () => {
                 <div className="relative w-full h-full">
                     {grid.map((row, y) => (
                         row.map((tile, x) => (
-                            <div key={`${x}-${y}`} className="absolute" style={{ left: x * TILE_SIZE, top: y * TILE_SIZE, width: TILE_SIZE, height: TILE_SIZE }}>
+                            <div
+                                key={`${x}-${y}`}
+                                className="absolute cursor-pointer"
+                                style={{ left: x * TILE_SIZE, top: y * TILE_SIZE, width: TILE_SIZE, height: TILE_SIZE }}
+                                onClick={() => {
+                                    if (uiMode !== 'PLAYING') return;
+                                    // Only allow adjacent tiles
+                                    const dx = x - player.x;
+                                    const dy = y - player.y;
+                                    if (Math.abs(dx) + Math.abs(dy) === 1) {
+                                        // Update facing
+                                        let newFacing = player.facing;
+                                        if (dx > 0) newFacing = 'RIGHT';
+                                        if (dx < 0) newFacing = 'LEFT';
+                                        if (dy > 0) newFacing = 'DOWN';
+                                        if (dy < 0) newFacing = 'UP';
+                                        setPlayer(p => ({ ...p, facing: newFacing }));
+                                        // Trigger interaction after a short delay
+                                        setTimeout(() => handleInteract(), 50);
+                                    }
+                                }}
+                            >
                                 {tile.type === 'GRASS' && <GrassTile className="w-full h-full" />}
                                 {tile.type === 'DIRT' && <DirtTile className="w-full h-full" wet={tile.isWatered} />}
                                 {tile.type === 'WATER' && <WaterTile className="w-full h-full" />}
@@ -819,8 +880,6 @@ const Game: React.FC = () => {
             )}
 
         </div>
-
-        </div >
     );
 };
 

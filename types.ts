@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 
 export type TileType = 'GRASS' | 'DIRT' | 'WATER' | 'HOUSE_FLOOR' | 'STONE_FLOOR' | 'DARK_DIRT';
 
-export type SceneName = 'FARM' | 'TOWN' | 'MINE';
+export type SceneName = 'FARM' | 'TOWN' | 'MINE' | 'HOUSE';
 
 export type UIMode = 'PLAYING' | 'INVENTORY' | 'CHEST' | 'SHOP' | 'DIALOGUE';
 

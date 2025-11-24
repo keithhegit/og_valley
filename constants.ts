@@ -35,11 +35,17 @@ export const ITEM_DB: Record<number, ItemDefinition> = {
   0: { name: 'Weed', type: 'obstacle', drop: 771, sprite: 'springobjects.png', pos: [0, 0], color: '#3a5f0b' },
   2: { name: 'Stone Node', type: 'obstacle', drop: 390, sprite: 'springobjects.png', pos: [16, 0], color: '#757575', solid: true },
   4: { name: 'Twig', type: 'obstacle', drop: 388, sprite: 'springobjects.png', pos: [32, 0], color: '#5d4037', solid: true },
+  75: { name: 'Copper Ore Node', type: 'obstacle', drop: 378, color: '#cd7f32', solid: true },
+  76: { name: 'Iron Ore Node', type: 'obstacle', drop: 380, color: '#a19d94', solid: true },
+  77: { name: 'Gold Ore Node', type: 'obstacle', drop: 384, color: '#ffd700', solid: true },
   18: { name: 'Daffodil', type: 'resource', sellPrice: 30, sprite: 'springobjects.png', pos: [18, 0], color: '#ffeb3b' },
 
   // Resources
   388: { name: 'Wood', type: 'resource', sellPrice: 2, sprite: 'springobjects.png', pos: [388, 0], color: '#795548' },
   390: { name: 'Stone', type: 'resource', sellPrice: 2, sprite: 'springobjects.png', pos: [390, 0], color: '#9e9e9e' },
+  378: { name: 'Copper Ore', type: 'resource', sellPrice: 5, color: '#cd7f32' },
+  380: { name: 'Iron Ore', type: 'resource', sellPrice: 10, color: '#a19d94' },
+  384: { name: 'Gold Ore', type: 'resource', sellPrice: 25, color: '#ffd700' },
   771: { name: 'Fiber', type: 'resource', sellPrice: 1, sprite: 'springobjects.png', pos: [771, 0], color: '#558b2f' },
 
   // Crops & Seeds
@@ -55,6 +61,8 @@ export const ITEM_DB: Record<number, ItemDefinition> = {
   103: { name: 'Axe', type: 'tool', action: 'clear', energy: 2, tier: 1 },
   104: { name: 'Pickaxe', type: 'tool', action: 'break', energy: 2, tier: 1 },
   105: { name: 'Rusty Sword', type: 'weapon', action: 'attack', minDmg: 2, maxDmg: 5, energy: 0 },
+  106: { name: 'Scythe', type: 'tool', action: 'clear', energy: 0, tier: 1, description: 'Cuts grass and weeds' },
+  107: { name: 'Fishing Rod', type: 'tool', action: 'fish', energy: 0, tier: 1, description: 'Cast into water to fish' },
 
   // Placeables & Containers
   130: { name: 'Chest', type: 'container', slots: 9, solid: true, description: 'Stores items.', color: '#8d6e63' },
@@ -76,8 +84,10 @@ INITIAL_INVENTORY[1] = { id: 102, count: 1 }; // Can
 INITIAL_INVENTORY[2] = { id: 103, count: 1 }; // Axe
 INITIAL_INVENTORY[3] = { id: 104, count: 1 }; // Pickaxe
 INITIAL_INVENTORY[4] = { id: 105, count: 1 }; // Sword
-INITIAL_INVENTORY[5] = { id: 472, count: 5 }; // Parsnip Seeds
-INITIAL_INVENTORY[6] = { id: 130, count: 1 }; // Free Chest
+INITIAL_INVENTORY[5] = { id: 106, count: 1 }; // Scythe
+INITIAL_INVENTORY[6] = { id: 107, count: 1 }; // Rod
+INITIAL_INVENTORY[7] = { id: 472, count: 5 }; // Parsnip Seeds
+INITIAL_INVENTORY[8] = { id: 130, count: 1 }; // Free Chest
 
 export const NPC_DIALOGUES: Record<string, Record<string, string[]>> = {
   MAYOR: {
