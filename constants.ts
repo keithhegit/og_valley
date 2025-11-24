@@ -41,12 +41,12 @@ export const ITEM_DB: Record<number, ItemDefinition> = {
   18: { name: 'Daffodil', type: 'resource', sellPrice: 30, sprite: 'springobjects.png', pos: [18, 0], color: '#ffeb3b' },
 
   // Resources
-  388: { name: 'Wood', type: 'resource', sellPrice: 2, sprite: 'springobjects.png', pos: [388, 0], color: '#795548' },
-  390: { name: 'Stone', type: 'resource', sellPrice: 2, sprite: 'springobjects.png', pos: [390, 0], color: '#9e9e9e' },
-  378: { name: 'Copper Ore', type: 'resource', sellPrice: 5, color: '#cd7f32' },
-  380: { name: 'Iron Ore', type: 'resource', sellPrice: 10, color: '#a19d94' },
-  384: { name: 'Gold Ore', type: 'resource', sellPrice: 25, color: '#ffd700' },
-  771: { name: 'Fiber', type: 'resource', sellPrice: 1, sprite: 'springobjects.png', pos: [771, 0], color: '#558b2f' },
+  388: { name: 'Wood', type: 'resource', sellPrice: 2, sprite: 'springobjects.png', pos: [388, 0], color: '#795548', description: 'A basic building material.' },
+  390: { name: 'Stone', type: 'resource', sellPrice: 2, sprite: 'springobjects.png', pos: [390, 0], color: '#9e9e9e', description: 'A common material.' },
+  378: { name: 'Copper Ore', type: 'resource', sellPrice: 5, color: '#cd7f32', description: 'A common ore. Can be smelted.' },
+  380: { name: 'Iron Ore', type: 'resource', sellPrice: 10, color: '#a19d94', description: 'A fairly common ore.' },
+  384: { name: 'Gold Ore', type: 'resource', sellPrice: 25, color: '#ffd700', description: 'A precious ore.' },
+  771: { name: 'Fiber', type: 'resource', sellPrice: 1, sprite: 'springobjects.png', pos: [771, 0], color: '#558b2f', description: 'Raw material sourced from plants.' },
 
   // Crops & Seeds
   472: { name: 'Parsnip Seeds', type: 'seed', price: 20, cropId: 24, description: 'Spring. 4 Days.', sprite: 'springobjects.png', pos: [496, 0] },
@@ -56,11 +56,11 @@ export const ITEM_DB: Record<number, ItemDefinition> = {
   192: { name: 'Potato', type: 'crop', sellPrice: 80, daysToGrow: 6, stages: 5, seasons: ['Spring'], chanceForExtra: 0.2, sprite: 'crops.png', row: 6, color: '#d7ccc8' },
 
   // Tools & Weapons
-  101: { name: 'Hoe', type: 'tool', action: 'till', energy: 2, tier: 1 },
-  102: { name: 'Watering Can', type: 'tool', action: 'water', energy: 2, tier: 1 },
-  103: { name: 'Axe', type: 'tool', action: 'clear', energy: 2, tier: 1 },
-  104: { name: 'Pickaxe', type: 'tool', action: 'break', energy: 2, tier: 1 },
-  105: { name: 'Rusty Sword', type: 'weapon', action: 'attack', minDmg: 2, maxDmg: 5, energy: 0 },
+  101: { name: 'Hoe', type: 'tool', action: 'till', energy: 2, tier: 1, description: 'Used to till soil.' },
+  102: { name: 'Watering Can', type: 'tool', action: 'water', energy: 2, tier: 1, description: 'Used to water crops.' },
+  103: { name: 'Axe', type: 'tool', action: 'clear', energy: 2, tier: 1, description: 'Used to chop wood.' },
+  104: { name: 'Pickaxe', type: 'tool', action: 'break', energy: 2, tier: 1, description: 'Used to break stones.' },
+  105: { name: 'Rusty Sword', type: 'weapon', action: 'attack', minDmg: 2, maxDmg: 5, energy: 0, description: 'A rusty old sword.' },
   106: { name: 'Scythe', type: 'tool', action: 'clear', energy: 0, tier: 1, description: 'Cuts grass and weeds' },
   107: { name: 'Fishing Rod', type: 'tool', action: 'fish', energy: 0, tier: 1, description: 'Cast into water to fish' },
 

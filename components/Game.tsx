@@ -883,7 +883,7 @@ const Game: React.FC = () => {
             )}
 
             {/* TIME & SCENE INDICATOR */}
-            <div className="absolute top-4 left-4 z-30 pointer-events-none">
+            <div className="absolute top-4 right-4 z-30 pointer-events-none text-right">
                 <h1 className="text-white font-bold text-shadow text-xl uppercase tracking-widest opacity-80">{currentScene}</h1>
                 <div className="text-white font-bold text-shadow mt-1 opacity-90">
                     Day {gameState.day}, {SEASONS[gameState.seasonIdx]} | {Math.floor(gameState.time / 60)}:{(gameState.time % 60).toString().padStart(2, '0')}
